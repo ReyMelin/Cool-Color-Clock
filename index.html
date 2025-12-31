@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cool Color Clock</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: #0a0a0a;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        .clock-container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                transparent 360deg
+            );
+        }
+
+        /* Seconds ring - outer (thin) */
+        .seconds-ring {
+            width: 600px;
+            height: 600px;
+        }
+
+        /* Minutes ring - middle */
+        .minutes-ring {
+            width: 500px;
+            height: 500px;
+        }
+
+        /* Hours ring - inner */
+        .hours-ring {
+            width: 350px;
+            height: 350px;
+        }
+
+        /* Diamond indicators */
+        .diamond {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            transform: rotate(45deg);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8),
+                        0 0 30px rgba(255, 255, 255, 0.4);
+            transition: all 0.1s ease-out;
+        }
+
+        .seconds-diamond {
+            width: 16px;
+            height: 16px;
+            background: rgba(210, 210, 220, 0.95);
+            box-shadow: 0 0 12px rgba(210, 210, 220, 0.9),
+                        0 0 25px rgba(210, 210, 220, 0.5);
+        }
+
+        .minutes-diamond {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 215, 120, 0.95);
+            box-shadow: 0 0 15px rgba(255, 215, 120, 0.9),
+                        0 0 30px rgba(255, 215, 120, 0.5);
+        }
+
+        .hours-diamond {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 170, 130, 0.95);
+            box-shadow: 0 0 18px rgba(255, 170, 130, 0.9),
+                        0 0 35px rgba(255, 170, 130, 0.5);
+        }
+
+        .info {
+            position: absolute;
+            bottom: 50px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 14px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock-container">
+        <div class="ring seconds-ring"></div>
+        <div class="diamond seconds-diamond"></div>
+        <div class="ring minutes-ring"></div>
+        <div class="diamond minutes-diamond"></div>
+        <div class="ring hours-ring"></div>
+        <div class="diamond hours-diamond"></div>
+    </div>
+    <div class="info">Cool Color Clock - Time expressed through color</div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const seconds = now.getSeconds();
+            const minutes = now.getMinutes();
+            const hours = now.getHours() % 12;
+
+            // Calculate angles (0deg is top, clockwise, -90 to rotate gradient start)
+            const secondsAngle = (seconds / 60) * 360 - 90;
+            const minutesAngle = (minutes / 60) * 360 - 90;
+            const hoursAngle = (hours / 12) * 360 - 90;
+
+            // Position diamonds
+            const secondsDiamond = document.querySelector('.seconds-diamond');
+            const minutesDiamond = document.querySelector('.minutes-diamond');
+            const hoursDiamond = document.querySelector('.hours-diamond');
+
+            // Calculate positions (angle in radians, radius to center of each ring)
+            const secondsAngleRad = ((seconds / 60) * 360) * Math.PI / 180;
+            const minutesAngleRad = ((minutes / 60) * 360) * Math.PI / 180;
+            const hoursAngleRad = ((hours / 12) * 360) * Math.PI / 180;
+
+            const secondsRadius = 300; // Half of seconds ring diameter
+            const minutesRadius = 250; // Half of minutes ring diameter
+            const hoursRadius = 175; // Half of hours ring diameter
+
+            const secondsX = secondsRadius * Math.sin(secondsAngleRad);
+            const secondsY = -secondsRadius * Math.cos(secondsAngleRad);
+            const minutesX = minutesRadius * Math.sin(minutesAngleRad);
+            const minutesY = -minutesRadius * Math.cos(minutesAngleRad);
+            const hoursX = hoursRadius * Math.sin(hoursAngleRad);
+            const hoursY = -hoursRadius * Math.cos(hoursAngleRad);
+
+            secondsDiamond.style.transform = `translate(${secondsX}px, ${secondsY}px) rotate(45deg)`;
+            minutesDiamond.style.transform = `translate(${minutesX}px, ${minutesY}px) rotate(45deg)`;
+            hoursDiamond.style.transform = `translate(${hoursX}px, ${hoursY}px) rotate(45deg)`;
+
+            // Seconds ring (outer) - elegant silver/platinum metallic
+            // The bright color indicates the current second position
+            const secondsRing = document.querySelector('.seconds-ring');
+            secondsRing.style.background = `conic-gradient(
+                from ${secondsAngle}deg,
+                hsl(210, 15%, 85%) 0deg,
+                hsl(210, 18%, 75%) 5deg,
+                hsl(210, 20%, 55%) 15deg,
+                hsl(210, 15%, 35%) 30deg,
+                hsl(210, 12%, 25%) 60deg,
+                hsl(210, 10%, 18%) 120deg,
+                hsl(210, 12%, 25%) 240deg,
+                hsl(210, 15%, 35%) 300deg,
+                hsl(210, 20%, 55%) 345deg,
+                hsl(210, 18%, 75%) 355deg,
+                hsl(210, 15%, 85%) 360deg
+            )`;
+
+            // Minutes ring (middle) - elegant gold/champagne metallic
+            const minutesRing = document.querySelector('.minutes-ring');
+            minutesRing.style.background = `conic-gradient(
+                from ${minutesAngle}deg,
+                hsl(45, 70%, 75%) 0deg,
+                hsl(45, 75%, 65%) 5deg,
+                hsl(45, 70%, 50%) 15deg,
+                hsl(45, 60%, 35%) 30deg,
+                hsl(45, 50%, 25%) 60deg,
+                hsl(45, 40%, 18%) 120deg,
+                hsl(45, 50%, 25%) 240deg,
+                hsl(45, 60%, 35%) 300deg,
+                hsl(45, 70%, 50%) 345deg,
+                hsl(45, 75%, 65%) 355deg,
+                hsl(45, 70%, 75%) 360deg
+            )`;
+
+            // Hours ring (inner) - elegant copper/rose gold metallic
+            const hoursRing = document.querySelector('.hours-ring');
+            hoursRing.style.background = `conic-gradient(
+                from ${hoursAngle}deg,
+                hsl(25, 65%, 70%) 0deg,
+                hsl(25, 70%, 60%) 10deg,
+                hsl(25, 65%, 45%) 30deg,
+                hsl(25, 55%, 32%) 60deg,
+                hsl(25, 45%, 23%) 90deg,
+                hsl(25, 35%, 16%) 180deg,
+                hsl(25, 45%, 23%) 270deg,
+                hsl(25, 55%, 32%) 300deg,
+                hsl(25, 65%, 45%) 330deg,
+                hsl(25, 70%, 60%) 350deg,
+                hsl(25, 65%, 70%) 360deg
+            )`;
+        }
+
+        // Update clock immediately and then every 100ms for smooth animation
+        updateClock();
+        setInterval(updateClock, 100);
+    </script>
+</body>
+</html>
