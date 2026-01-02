@@ -1,2 +1,2 @@
-# Cool-Color-Clock
+# Gradient-Clock
 Color Clock
